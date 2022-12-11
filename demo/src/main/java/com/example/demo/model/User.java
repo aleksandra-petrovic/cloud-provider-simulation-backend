@@ -39,22 +39,9 @@ public class User {
             joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "USERID"),
             inverseJoinColumns = @JoinColumn(name = "PERMISSION_ID", referencedColumnName = "PERMISSIONID")
     )
-    @JsonIgnore
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//    @JsonIgnore
+//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Permission> permissions = new ArrayList<>();
-
-
-//    @Column
-//    private boolean can_read_users;
-//
-//    @Column
-//    private boolean can_update_users;
-//
-//    @Column
-//    private boolean can_delete_users;
-//
-//    @Column
-//    private boolean can_create_users;
 
 
 }

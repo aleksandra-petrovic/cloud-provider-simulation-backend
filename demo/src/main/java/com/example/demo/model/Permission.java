@@ -27,6 +27,7 @@ public class Permission {
             joinColumns = @JoinColumn(name = "PERMISSION_ID", referencedColumnName = "PERMISSIONID"),
             inverseJoinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "USERID")
     )
+    @JsonIgnore
     private List<User> users = new ArrayList<>();
 
 }
