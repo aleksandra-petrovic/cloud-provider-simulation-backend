@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 
+import com.example.demo.model.Permission;
 import com.example.demo.model.User;
 import com.example.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -34,6 +36,8 @@ public class UserService implements UserDetailsService {
         return this.userRepository.findByEmail(email);
     }
 
+    public User findById(Long id) { return this.userRepository.findByUserId(id); }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User myUser = this.findByEmail(username);
@@ -42,6 +46,28 @@ public class UserService implements UserDetailsService {
         }
 
         return new org.springframework.security.core.userdetails.User(myUser.getEmail(), myUser.getPassword(), new ArrayList<>());
+    }
+
+    public User addNewUser(String name, String surname, String email, String password, List<Permission> permissions){
+        User user = new User();
+        user.setName(name);
+        user.setSurname(surname);
+        user.setEmail(email);
+        user.setPassword(this.passwordEncoder.encode(password));
+        user.setPermissions(permissions);
+        return this.userRepository.save(user);
+    }
+
+    public User editUser(User user, String name, String surname, String email, List<Permission> permissions){
+        user.setName(name);
+        user.setSurname(surname);
+        user.setEmail(email);
+        user.setPermissions(permissions);
+        return this.userRepository.save(user);
+    }
+
+    public void deleteById(Long id){
+        userRepository.deleteById(id);
     }
 
     public User create(User user) {
