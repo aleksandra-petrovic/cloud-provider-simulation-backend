@@ -4,6 +4,7 @@ import com.example.demo.model.Permission;
 import com.example.demo.model.User;
 import com.example.demo.repositories.PermissionRepository;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,11 +19,10 @@ public class BootstrapData implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final PermissionRepository permissionRepository;
-
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public BootstrapData(UserRepository userRepository,PermissionRepository permissionRepository, PasswordEncoder passwordEncoder) {
+    public BootstrapData(UserRepository userRepository,PermissionRepository permissionRepository, UserService userService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.permissionRepository = permissionRepository;
         this.passwordEncoder = passwordEncoder;
@@ -54,7 +54,7 @@ public class BootstrapData implements CommandLineRunner {
             user.setName(FIRST_NAME_LIST[random.nextInt(FIRST_NAME_LIST.length)]);
             user.setSurname(LAST_NAME_LIST[random.nextInt(LAST_NAME_LIST.length)]);
             user.setEmail("user" + i + "@gmail.com");
-            user.setPassword("user" + i);
+            user.setPassword(this.passwordEncoder.encode("user" + i));
 
 
             List<Integer> list = new ArrayList<>();
@@ -66,6 +66,12 @@ public class BootstrapData implements CommandLineRunner {
                 int rand = random.nextInt(list.size());
                 user.getPermissions().add(permissions.get(list.get(rand)));
                 list.remove(rand);
+            }
+
+            if(user.getPermissions().contains(permissions.get(1)) || user.getPermissions().contains(permissions.get(2)) || user.getPermissions().contains(permissions.get(3))){
+                if(!user.getPermissions().contains(permissions.get(0))){
+                    user.getPermissions().add(permissions.get(0));
+                }
             }
 
             users.add(user);
