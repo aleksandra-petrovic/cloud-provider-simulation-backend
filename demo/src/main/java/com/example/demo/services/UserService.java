@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -70,10 +69,6 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(id);
     }
 
-    public User create(User user) {
-        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
-        return this.userRepository.save(user);
-    }
 }
 
 

@@ -15,5 +15,4 @@ public class LoginResponse {
      this.jwt = jwt;
      this.permissions = permissions;
      }
-//    public LoginResponse(String jwt) { this.jwt = jwt; }
 }

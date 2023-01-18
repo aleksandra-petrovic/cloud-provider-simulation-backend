@@ -5,6 +5,7 @@ import com.example.demo.repositories.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,11 +21,11 @@ public class PermissionService {
     public Permission findPermission(String permissionName){
         return this.permissionRepository.findByPermission(permissionName);
     }
-//
-//    public Permission createPermission(String permission){
-//        Permission p = new Permission();
-//        p.setPermission(permission);
-//        return this.permissionRepository.save(p);
-//    }
+
+    public List<Permission> findPermissions(List<String> permisions){
+        List<Permission> permissionList = new ArrayList<>();
+        for(String p : permisions) permissionList.add(this.permissionRepository.findByPermission(p));
+        return permissionList;
+    }
 
 }

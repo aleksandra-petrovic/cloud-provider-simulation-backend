@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "MY JWT SECRET";
+    private final String SECRET_KEY = "MY_JWT_SECRET";
 
     public Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
@@ -24,12 +24,16 @@ public class JwtUtil {
         return extractAllClaims(token).getSubject();
     }
 
+    public Object extractPermission(String token, String permission) { return extractAllClaims(token).get(permission); }
+
     public boolean isTokenExpired(String token) {
         return extractAllClaims(token).getExpiration().before(new Date());
     }
 
-    public String generateToken(String username){
+    public String generateToken(String username, List<String> permissions){
         Map<String, Object> claims = new HashMap<>();
+        for(String permission : permissions) { claims.put(permission,true); }
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
