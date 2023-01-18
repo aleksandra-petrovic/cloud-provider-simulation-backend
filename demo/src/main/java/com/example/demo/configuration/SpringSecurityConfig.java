@@ -40,12 +40,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/home/**").permitAll()
+//                .antMatchers("/home/**").authenticated()
 //                .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         httpSecurity.addFilterBefore(this.jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
     }
 
     @Override

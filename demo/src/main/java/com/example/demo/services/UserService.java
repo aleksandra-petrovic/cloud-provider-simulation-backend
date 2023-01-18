@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -21,6 +20,9 @@ public class UserService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
 
     private UserRepository userRepository;
+
+    private String jwt;
+
 
     @Autowired
     public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
@@ -73,6 +75,14 @@ public class UserService implements UserDetailsService {
     public User create(User user) {
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         return this.userRepository.save(user);
+    }
+
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
+    }
+
+    public String getJwt() {
+        return jwt;
     }
 }
 

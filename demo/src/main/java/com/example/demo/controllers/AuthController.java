@@ -45,7 +45,9 @@ public class AuthController {
             permissions.add(p.getPermission());
         }
 
-        return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(loginRequest.getUsername()), permissions));
+        String token = jwtUtil.generateToken(loginRequest.getUsername());
+        userService.setJwt(token);
+        return ResponseEntity.ok(new LoginResponse(token, permissions));
     }
 
 }
