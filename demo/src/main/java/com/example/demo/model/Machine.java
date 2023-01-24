@@ -26,4 +26,7 @@ public class Machine {
     private boolean active;
     @Column
     private Date dateCreated;
+    @Column
+    @Version
+    private Integer version;
 }

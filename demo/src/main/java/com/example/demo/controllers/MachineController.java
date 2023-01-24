@@ -1,8 +1,10 @@
 package com.example.demo.controllers;
 
 import com.example.demo.model.Machine;
+import com.example.demo.model.Status;
 import com.example.demo.model.User;
 import com.example.demo.requests.CreateRequest;
+import com.example.demo.requests.ScheduleRequest;
 import com.example.demo.requests.SearchRequest;
 import com.example.demo.services.MachineService;
 import com.example.demo.services.UserService;
@@ -77,4 +79,59 @@ public class MachineController {
             return ResponseEntity.status(401).build();
         }
     }
+
+    @PostMapping("/start/{id}")
+    public ResponseEntity<?> startMachine(@PathVariable("id") Long id, @RequestBody ScheduleRequest scheduleRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String jwt) {
+        jwt = takeJwt(jwt);
+
+        if (!jwtUtil.isTokenExpired(jwt) &&
+                jwtUtil.extractPermission(jwt, "can_start_machines").equals(true) &&
+                !machineService.findById(id).getStatus().equals(Status.RUNNING)) {
+            if(scheduleRequest.getDate().equals(null)) {
+                machineService.start(id);
+            }else{
+                machineService.scheduledStart(id, scheduleRequest.getDate());
+            }
+            return ResponseEntity.ok("machine starting...");
+        }else{
+            return ResponseEntity.status(401).build();
+        }
+    }
+
+    @PostMapping("/stop/{id}")
+    public ResponseEntity<?> stopMachine(@PathVariable("id") Long id, @RequestBody ScheduleRequest scheduleRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String jwt) {
+        jwt = takeJwt(jwt);
+
+        if (!jwtUtil.isTokenExpired(jwt) &&
+                jwtUtil.extractPermission(jwt, "can_stop_machines").equals(true) &&
+                !machineService.findById(id).getStatus().equals(Status.STOPPED)) {
+            if(scheduleRequest.getDate().equals(null)) {
+                machineService.stop(id);
+            }else{
+                machineService.scheduledStop(id, scheduleRequest.getDate());
+            }
+            return ResponseEntity.ok("machine stopping...");
+        }else{
+            return ResponseEntity.status(401).build();
+        }
+    }
+
+    @PostMapping("/restart/{id}")
+    public ResponseEntity<?> restartMachine(@PathVariable("id") Long id, @RequestBody ScheduleRequest scheduleRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String jwt) {
+        jwt = takeJwt(jwt);
+
+        if (!jwtUtil.isTokenExpired(jwt) &&
+                jwtUtil.extractPermission(jwt, "can_restart_machines").equals(true) &&
+                !machineService.findById(id).getStatus().equals(Status.STOPPED)) {
+            if(scheduleRequest.getDate().equals(null)) {
+                machineService.restart(id);
+            }else{
+                machineService.scheduledRestart(id, scheduleRequest.getDate());
+            }
+            return ResponseEntity.ok("machine restarting...");
+        }else{
+            return ResponseEntity.status(401).build();
+        }
+    }
+
 }
