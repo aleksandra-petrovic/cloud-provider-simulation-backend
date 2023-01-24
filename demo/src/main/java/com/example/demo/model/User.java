@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,5 +41,9 @@ public class User {
 //    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Permission> permissions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    //@JsonIgnore
+    //@ToString.Exclude
+    private List<Machine> machines;
 
 }

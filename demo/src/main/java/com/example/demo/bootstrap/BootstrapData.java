@@ -1,7 +1,10 @@
 package com.example.demo.bootstrap;
 
+import com.example.demo.model.Machine;
 import com.example.demo.model.Permission;
+import com.example.demo.model.Status;
 import com.example.demo.model.User;
+import com.example.demo.repositories.MachineRepository;
 import com.example.demo.repositories.PermissionRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.UserService;
@@ -10,7 +13,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -19,12 +24,14 @@ public class BootstrapData implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final PermissionRepository permissionRepository;
+    private final MachineRepository machineRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public BootstrapData(UserRepository userRepository,PermissionRepository permissionRepository, UserService userService, PasswordEncoder passwordEncoder) {
+    public BootstrapData(UserRepository userRepository,PermissionRepository permissionRepository, MachineRepository machineRepository,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.permissionRepository = permissionRepository;
+        this.machineRepository = machineRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -35,10 +42,11 @@ public class BootstrapData implements CommandLineRunner {
 
         String[] FIRST_NAME_LIST = {"John-James", "Justine", "Ahsan", "Leja", "Jad", "Vernon", "Cara", "Eddison", "Eira", "Emily"};
         String[] LAST_NAME_LIST = {"Booker", "Summers", "Reyes", "Rahman", "Crane", "Cairns", "Hebert", "Bradshaw", "Shannon", "Phillips"};
-        String[] PERMISSION_LIST = {"can_read_users", "can_update_users", "can_delete_users", "can_create_users"};
+        String[] PERMISSION_LIST = {"can_read_users", "can_update_users", "can_delete_users", "can_create_users",
+                                    "can_search_machines", "can_start_machines", "can_stop_machines", "can_restart_machines",
+                                    "can_create_machines", "can_destroy_machines"};
 
         Random random = new Random();
-
         List<Permission> permissions = new ArrayList<>();
         for (int i = 0 ; i < PERMISSION_LIST.length ; i++){
             Permission permission = new Permission();
@@ -46,7 +54,7 @@ public class BootstrapData implements CommandLineRunner {
 
             permissions.add(permission);
         }
-        System.out.println(permissionRepository.saveAll(permissions));
+        permissionRepository.saveAll(permissions);
 
         List<User> users = new ArrayList<>();
         for (int i = 1; i < 29; i++) {
@@ -62,7 +70,7 @@ public class BootstrapData implements CommandLineRunner {
                 list.add(k);
             }
 
-            for (int j = 0; j < random.nextInt(5); j++) {
+            for (int j = 0; j < random.nextInt(11); j++) {
                 int rand = random.nextInt(list.size());
                 user.getPermissions().add(permissions.get(list.get(rand)));
                 list.remove(rand);
@@ -76,9 +84,24 @@ public class BootstrapData implements CommandLineRunner {
 
             users.add(user);
         }
-        System.out.println(userRepository.saveAll(users));
+        userRepository.saveAll(users);
+
+        List<Machine> machines = new ArrayList<>();
+        for(int i=1 ; i<11 ; i++){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+            Machine machine = new Machine();
+            machine.setName("machine" + i);
+            machine.setUser(userRepository.findByUserId(Long.valueOf(i)));
+            machine.setStatus(Status.STOPPED);
+            machine.setActive(true);
+            machine.setDateCreated(sdf.parse(sdf.format(new Date())));
+
+            machines.add(machine);
+        }
+
+        machineRepository.saveAll(machines);
 
         System.out.println("Data loaded!");
-
     }
 }

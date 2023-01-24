@@ -46,14 +46,8 @@ public class AuthController {
         List<Permission> permissionsObjects = user.getPermissions();
         List<String> permissions = new ArrayList<>();
         for(Permission p : permissionsObjects) { permissions.add(p.getPermission()); }
-//        List<Permission> permissionsObjects = user.getPermissions();
-//        List<String> permissions = new ArrayList<>();
-//        for(Permission p : permissionsObjects){
-//            permissions.add(p.getPermission());
-//        }
 
-//        String token = jwtUtil.generateToken(loginRequest.getUsername());
         String token = jwtUtil.generateToken(loginRequest.getUsername(), permissions);
-        return ResponseEntity.ok(new LoginResponse(token, permissions));
+        return ResponseEntity.ok(new LoginResponse(token));
     }
 }
