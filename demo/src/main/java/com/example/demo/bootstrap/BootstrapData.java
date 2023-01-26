@@ -1,9 +1,7 @@
 package com.example.demo.bootstrap;
 
-import com.example.demo.model.Machine;
-import com.example.demo.model.Permission;
-import com.example.demo.model.Status;
-import com.example.demo.model.User;
+import com.example.demo.model.*;
+import com.example.demo.repositories.ErrorMsgRepository;
 import com.example.demo.repositories.MachineRepository;
 import com.example.demo.repositories.PermissionRepository;
 import com.example.demo.repositories.UserRepository;
@@ -25,13 +23,15 @@ public class BootstrapData implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PermissionRepository permissionRepository;
     private final MachineRepository machineRepository;
+    private final ErrorMsgRepository errorMsgRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public BootstrapData(UserRepository userRepository,PermissionRepository permissionRepository, MachineRepository machineRepository,PasswordEncoder passwordEncoder) {
+    public BootstrapData(UserRepository userRepository,PermissionRepository permissionRepository, MachineRepository machineRepository, ErrorMsgRepository errorMsgRepository,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.permissionRepository = permissionRepository;
         this.machineRepository = machineRepository;
+        this.errorMsgRepository = errorMsgRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -64,24 +64,28 @@ public class BootstrapData implements CommandLineRunner {
             user.setEmail("user" + i + "@gmail.com");
             user.setPassword(this.passwordEncoder.encode("user" + i));
 
+            if(i == 1){
+                for (int j = 0; j < permissions.size() ; j++) {
+                    user.getPermissions().add(permissions.get(j));
+                }
+            }else {
+                List<Integer> list = new ArrayList<>();
+                for (int k = 0; k < permissions.size(); k++) {
+                    list.add(k);
+                }
 
-            List<Integer> list = new ArrayList<>();
-            for(int k = 0 ; k < permissions.size() ; k++){
-                list.add(k);
-            }
+                for (int j = 0; j < random.nextInt(11); j++) {
+                    int rand = random.nextInt(list.size());
+                    user.getPermissions().add(permissions.get(list.get(rand)));
+                    list.remove(rand);
+                }
 
-            for (int j = 0; j < random.nextInt(11); j++) {
-                int rand = random.nextInt(list.size());
-                user.getPermissions().add(permissions.get(list.get(rand)));
-                list.remove(rand);
-            }
-
-            if(user.getPermissions().contains(permissions.get(1)) || user.getPermissions().contains(permissions.get(2)) || user.getPermissions().contains(permissions.get(3))){
-                if(!user.getPermissions().contains(permissions.get(0))){
-                    user.getPermissions().add(permissions.get(0));
+                if (user.getPermissions().contains(permissions.get(1)) || user.getPermissions().contains(permissions.get(2)) || user.getPermissions().contains(permissions.get(3))) {
+                    if (!user.getPermissions().contains(permissions.get(0))) {
+                        user.getPermissions().add(permissions.get(0));
+                    }
                 }
             }
-
             users.add(user);
         }
         userRepository.saveAll(users);
@@ -101,6 +105,14 @@ public class BootstrapData implements CommandLineRunner {
         }
 
         machineRepository.saveAll(machines);
+
+        ErrorMsg errorMsg = new ErrorMsg();
+        errorMsg.setDate(new Date());
+        errorMsg.setOperation("example operation");
+        errorMsg.setDescription("example description");
+        errorMsg.setMachineId(Long.valueOf(3));
+
+        errorMsgRepository.save(errorMsg);
 
         System.out.println("Data loaded!");
     }
