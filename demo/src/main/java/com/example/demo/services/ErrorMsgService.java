@@ -36,6 +36,8 @@ public class ErrorMsgService {
         for(Machine m: machines){
             errorMsgs.addAll(this.errorMsgRepository.findErrorMsgsByMachineId(m.getMachineId()));
         }
+        //adds validation errors
+        errorMsgs.addAll(this.errorMsgRepository.findErrorMsgsByMachineId(Long.valueOf(0)));
         return errorMsgs;
     }
 

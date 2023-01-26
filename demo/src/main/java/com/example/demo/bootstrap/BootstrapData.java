@@ -92,14 +92,15 @@ public class BootstrapData implements CommandLineRunner {
 
         List<Machine> machines = new ArrayList<>();
         for(int i=1 ; i<11 ; i++){
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+//            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
             Machine machine = new Machine();
             machine.setName("machine" + i);
             machine.setUser(userRepository.findByUserId(Long.valueOf(i)));
             machine.setStatus(Status.STOPPED);
             machine.setActive(true);
-            machine.setDateCreated(sdf.parse(sdf.format(new Date())));
+//            machine.setDateCreated(sdf.parse(sdf.format(new Date())));
+            machine.setDateCreated(new Date());
 
             machines.add(machine);
         }
